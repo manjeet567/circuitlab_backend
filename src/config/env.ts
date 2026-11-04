@@ -9,6 +9,8 @@ const envSchema = z.object({
   CLIENT_URL: z.string().default('http://localhost:3000'),
   CORS_ORIGIN: z.string().optional(),
   MONGODB_URI: z.string().default('mongodb://127.0.0.1:27017/circuitlab3d'),
+  NEXT_PUBLIC_API_URL: z.string().optional(),
+  API_URL: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

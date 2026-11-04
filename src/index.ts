@@ -8,6 +8,7 @@ import { errorHandler } from './middleware/error.middleware.js';
 import { apiRouter } from './routes/index.js';
 import { NotFoundError } from './utils/errors.js';
 import { logger } from './utils/logger.js';
+import { startKeepAliveCron, stopKeepAliveCron } from './services/cron.service.js';
 
 export const app = express();
 
@@ -116,6 +117,7 @@ let isShuttingDown = false;
 export async function gracefulShutdown(signal: string) {
   if (isShuttingDown) return;
   isShuttingDown = true;
+  stopKeepAliveCron();
   logger.info(`Received ${signal}. Starting graceful shutdown...`);
 
   if (server) {
@@ -145,6 +147,8 @@ if (process.env.NODE_ENV !== 'test') {
   connectDatabase().then(() => {
     server = app.listen(env.PORT, () => {
       logger.info(`🚀 CircuitLab 3D API server running on http://localhost:${env.PORT}`);
+      // Start 5-minute keep-alive cron to prevent Render / free server inactivity sleep
+      startKeepAliveCron();
     });
   });
 }
