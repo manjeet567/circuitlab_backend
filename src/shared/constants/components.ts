@@ -135,6 +135,41 @@ export const COMPONENT_METADATA: Record<
       hasPowerRails: true,
     },
   },
+
+  oled: {
+    name: '0.96" I2C OLED Display',
+    category: 'actuator',
+    description: '128x64 monochrome SSD1306 OLED display with I2C interface.',
+    dimensions: [2.8, 0.4, 2.8],
+    pins: [
+      { id: 'gnd', name: 'Pin 1: GND', type: 'ground', position: [-0.6, 0.15, 1.2], description: 'Ground' },
+      { id: 'vcc', name: 'Pin 2: VCC', type: 'power', position: [-0.2, 0.15, 1.2], description: 'Power 3.3V - 5V' },
+      { id: 'scl', name: 'Pin 3: SCL', type: 'gpio', position: [0.2, 0.15, 1.2], description: 'I2C Clock (ESP32 GPIO22)' },
+      { id: 'sda', name: 'Pin 4: SDA', type: 'gpio', position: [0.6, 0.15, 1.2], description: 'I2C Data (ESP32 GPIO21)' },
+    ],
+    defaultProperties: {
+      address: '0x3C',
+      width: 128,
+      height: 64,
+    },
+  },
+
+  power_supply: {
+    name: 'DC Power Supply Module',
+    category: 'passive',
+    description: 'Dual voltage 3.3V / 5V breadboard power supply module.',
+    dimensions: [3.2, 0.6, 1.8],
+    pins: [
+      { id: 'vcc_5v', name: '+5V Out', type: 'power', position: [-1.0, 0.2, 0], description: 'Regulated 5.0V output' },
+      { id: 'vcc_3v3', name: '+3.3V Out', type: 'power', position: [-0.3, 0.2, 0], description: 'Regulated 3.3V output' },
+      { id: 'gnd1', name: 'GND 1', type: 'ground', position: [0.3, 0.2, 0], description: 'Ground rail' },
+      { id: 'gnd2', name: 'GND 2', type: 'ground', position: [1.0, 0.2, 0], description: 'Ground rail' },
+    ],
+    defaultProperties: {
+      voltage: 5.0,
+      maxCurrent_mA: 700,
+    },
+  },
 };
 
 export const WIRE_COLORS = [

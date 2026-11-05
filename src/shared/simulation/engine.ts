@@ -130,6 +130,17 @@ export class SimulationEngine {
           active: false,
         };
         this.componentStates.set(comp.id, initialDht);
+      } else if (comp.type === 'oled') {
+        this.componentStates.set(comp.id, {
+          active: false,
+          address: '0x3C',
+          text: 'OLED Display (SSD1306)',
+        });
+      } else if (comp.type === 'power_supply') {
+        this.componentStates.set(comp.id, {
+          active: true,
+          voltage: 5.0,
+        });
       }
     }
 
@@ -259,6 +270,9 @@ export class SimulationEngine {
         if (c.type === 'esp32') {
           if (areConnectedWithSwitches(comp, pin, c.id, 'gnd1')) return true;
           if (areConnectedWithSwitches(comp, pin, c.id, 'gnd2')) return true;
+        } else if (c.type === 'power_supply') {
+          if (areConnectedWithSwitches(comp, pin, c.id, 'gnd1')) return true;
+          if (areConnectedWithSwitches(comp, pin, c.id, 'gnd2')) return true;
         }
       }
       return false;
@@ -291,6 +305,13 @@ export class SimulationEngine {
                 }
               }
             }
+          }
+        } else if (c.type === 'power_supply') {
+          if (areConnectedWithSwitches(comp, pin, c.id, 'vcc_5v')) {
+            return { reachesHigh: true, sourceVoltage: 5.0, sourcePin: 'vcc_5v' };
+          }
+          if (areConnectedWithSwitches(comp, pin, c.id, 'vcc_3v3')) {
+            return { reachesHigh: true, sourceVoltage: 3.3, sourcePin: 'vcc_3v3' };
           }
         }
       }
@@ -347,6 +368,22 @@ export class SimulationEngine {
             'sensor',
             `DHT22 (${c.name}) initialized. Temp: ${dhtState.temperature}°C, Humidity: ${dhtState.humidity}%`
           );
+        }
+      }
+    }
+
+    // 3b. Evaluate OLED Displays
+    for (const c of components) {
+      if (c.type === 'oled') {
+        const oledState = this.componentStates.get(c.id);
+        if (oledState) {
+          const hasVcc = pinReachesHighSource(c.id, 'vcc').reachesHigh;
+          const hasGnd = pinReachesGround(c.id, 'gnd');
+          const wasActive = oledState.active;
+          oledState.active = hasVcc && hasGnd;
+          if (!wasActive && oledState.active) {
+            this.logEvent('sensor', `OLED 0.96" Display initialized at I2C address 0x3C.`);
+          }
         }
       }
     }

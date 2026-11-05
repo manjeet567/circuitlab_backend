@@ -4,7 +4,9 @@ export type ComponentType =
   | 'resistor'
   | 'push_button'
   | 'dht22'
-  | 'breadboard';
+  | 'breadboard'
+  | 'oled'
+  | 'power_supply';
 
 export type PinType =
   | 'power'
